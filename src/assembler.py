@@ -1,13 +1,28 @@
 import argparse
 from pathlib import Path
 
-# from parsy import
-
+import binary
 import parser
+
+def make_ast(lark_tree):
+    print(lark_tree.pretty())
+
 
 def assemble(source, output):
 
-    asm_parser = parser.asm()
+    asm_parser = parser.create_parser()
+
+    #parse into the Lark parse tree
+    with source.open("r") as fh:
+        asm_source = fh.read()
+        lark_tree = asm_parser.parse(asm_source)
+
+    print(lark_tree.pretty())
+
+    #TODO arity and type checks
+
+    #create the binary format
+    binary.build_binary(lark_tree)
 
 
 def main():

@@ -24,15 +24,20 @@ area_circle:
 
 
 asm_grammar = r"""
-program: data_section? code_section
+program: section+
 
 argument: INT | FLOAT
 
-instruction: LABEL? OPCODE
-    | LABEL? OPCODE argument
+instruction: label? opcode
+    | label? opcode argument
+
+section: data_section
+    | code_section
 
 code_section: ".code" instruction+
 data_section: ".data"
+
+opcode: OPCODE
 
 OPCODE: "pushi32" | "pushf32"
         | "addi" | "subi" | "muli" | "divi" | "modi" | "expi"
@@ -40,6 +45,7 @@ OPCODE: "pushi32" | "pushf32"
         | "squarei" | "squaref" | "sqrooti" | "sqrootf"
         | "pop"
 
+label: LABEL
 LABEL: /[a-zA-Z_][\w_]+:/
 
 COMMENT: /;[^\n]*/
@@ -56,6 +62,14 @@ FLOAT: ["+"|"-"]? UFLOAT
 %ignore NEWLINE
 %ignore COMMENT
 """
+
+def create_parser():
+    parser = Lark(asm_grammar, start="program")
+
+    return parser
+
+
+
 
 if __name__ == "__main__":
     parser = Lark(asm_grammar, start="program")
